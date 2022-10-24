@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import multiprocessing as mp
+import sys
 
 PAGE_URL = 'https://pokemondb.net/pokedex/national'
 PAGE_PREFIX = 'https://pokemondb.net'
@@ -65,11 +66,14 @@ def download_images_to_path(links: [str], save_path: str) -> None:
             outfile.write(r.content)
 
 
-def process_individual_pokemon(info: {'id': int, 'name': str, 'link': str}) -> None:
+def process_individual_pokemon(card) -> None:
     """
-    :param info: Pokemon's info (as returned from card_info)
+    :param card: Pokemon's card
     :return: None (Only downloads all images to the correct place)
     """
+    card = BeautifulSoup(card, 'lxml')
+    info = card_info(card)
+    cover_image_link = card.find(class_="img-fixed img-sprite")['data-src']
     print("executing", info['name'])
     soup = get_soup_from_link(info['link'], add_prefix=True)
     boxes = soup.find_all('a', class_='sprite-share-link')
@@ -77,6 +81,7 @@ def process_individual_pokemon(info: {'id': int, 'name': str, 'link': str}) -> N
 
     additional_artwork_link = soup.find('a', string='Additional artwork')['href']
     images_links = process_artwork_link(additional_artwork_link)
+    images_links = [cover_image_link] + images_links
 
     dir_name = f"{'{0:03}'.format(info['id'])}. {info['name']}"
     save_path = f"./data/" + dir_name
@@ -89,13 +94,17 @@ def process_individual_pokemon(info: {'id': int, 'name': str, 'link': str}) -> N
     download_images_to_path(sprites_links, save_path_sprites)
 
 
-def get_all_image():
+def get_all_images():
     """
     This function downloads all images from https://pokemondb.net/pokedex/national
     and saves them to ./data folder, with separate folder for each pokemon.
     """
     html_text = requests.get(PAGE_URL).text
     soup = BeautifulSoup(html_text, 'lxml')
-    pokemons_info = [card_info(card) for card in soup.find_all('div', class_='infocard')]
+
+    # Converted to string and then back to BeautifulSoup to bypass recursion max size problem
+    # Solution taken from here - https://stackoverflow.com/a/52021597
+    pokemons_info = [str(card) for card in soup.find_all('div', class_='infocard')]
+
     pool = mp.Pool(mp.cpu_count())
     pool.map(process_individual_pokemon, pokemons_info)
