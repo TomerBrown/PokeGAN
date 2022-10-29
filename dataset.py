@@ -36,7 +36,7 @@ class PokemonDataset(Dataset):
         pokemon_csv_path = path.join(dir_path, "pokemon.csv")
         data = pd.read_csv(pokemon_csv_path, encoding='utf-8')
         self.images = data['path'].values
-        self.images = [path.join(dir_path, 'data', image) for image in self.images]
+        self.images = [path.join(dir_path, 'data', path.normpath(image)) for image in self.images]
         self.labels = data['label'].values
         self.transform = transform
 
