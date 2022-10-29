@@ -1,3 +1,5 @@
+import os.path as path
+
 import pandas as pd
 import torch
 import torchvision
@@ -30,9 +32,11 @@ def pad_to_square(image):
 
 
 class PokemonDataset(Dataset):
-    def __init__(self, pokemon_csv_path: str, transform=None):
+    def __init__(self, dir_path: str, transform=None):
+        pokemon_csv_path = path.join(dir_path, "pokemon.csv")
         data = pd.read_csv(pokemon_csv_path, encoding='utf-8')
         self.images = data['path'].values
+        self.images = [path.join(dir_path, 'data', image) for image in self.images]
         self.labels = data['label'].values
         self.transform = transform
 
@@ -86,9 +90,9 @@ class PokemonDataset(Dataset):
         return mean / len(self), std / len(self)
 
 
-def get_data_loader(batch_size=1, shuffle=True, num_workers=1, pokemon_csv_path='pokemon.csv',
+def get_data_loader(batch_size=1, shuffle=True, num_workers=1, dir_path: str = '.',
                     transform=utils.get_transformation()):
-    poke_dataset = PokemonDataset(pokemon_csv_path, transform)
+    poke_dataset = PokemonDataset(dir_path, transform)
     return DataLoader(
         dataset=poke_dataset,
         batch_size=batch_size,

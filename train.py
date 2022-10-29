@@ -19,9 +19,9 @@ FEATURES_DISC = 64
 FEATURES_GEN = 64
 
 
-def train():
+def train(dir_path: str):
     # Get the dataloader
-    loader = get_data_loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+    loader = get_data_loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=2, dir_path=dir_path)
 
     # Get the Generator and Discriminator and initialize the weights.
     gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
@@ -74,15 +74,15 @@ def train():
                     f" Loss D: {loss_disc:.4f}, loss G: {loss_gen:.4f} "
                 )
 
-            with torch.no_grad():
-                fake = gen(fixed_noise)
-                img_grid_real = torchvision.utils.make_grid(
-                    real[:32], normalize=True
-                )
-                img_grid_fake = torchvision.utils.make_grid(
-                    fake[:32], normalize=True
-                )
-                writer_real.add_image('Real', img_grid_real, global_step=step)
-                writer_fake.add_image('Fake', img_grid_fake, global_step=step)
+                with torch.no_grad():
+                    fake = gen(fixed_noise)
+                    img_grid_real = torchvision.utils.make_grid(
+                        real[:32], normalize=True
+                    )
+                    img_grid_fake = torchvision.utils.make_grid(
+                        fake[:32], normalize=True
+                    )
+                    writer_real.add_image('Real', img_grid_real, global_step=step)
+                    writer_fake.add_image('Fake', img_grid_fake, global_step=step)
 
-                step += 1
+                    step += 1
