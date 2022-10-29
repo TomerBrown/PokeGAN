@@ -28,6 +28,7 @@ def get_transformation():
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(25, fill=(255, 255, 255)),
         transforms.ColorJitter(contrast=0.2, hue=0.2, saturation=0.2, brightness=0.2),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize([0.5] * 3, [0.5] * 3)
     ]
     )
