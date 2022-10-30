@@ -19,15 +19,15 @@ FEATURES_DISC = 64
 FEATURES_GEN = 64
 
 
-def train(dir_path: str, checkpoint_dir: str, load_path: str = None):
+def train(dir_path: str, checkpoint_dir: str, load_path_gen: str = None, load_path_disc: str = None):
     # Get the dataloader
     loader = get_data_loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=2, dir_path=dir_path)
 
     # Get the Generator and Discriminator and initialize the weights.
     gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
     disc = Discriminator(CHANNELS_IMG, FEATURES_DISC).to(device)
-    initialize_weights(gen, load_path)
-    initialize_weights(disc, load_path)
+    initialize_weights(gen, load_path_gen)
+    initialize_weights(disc, load_path_disc)
 
     # optimizers
     opt_gen = optim.Adam(gen.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
