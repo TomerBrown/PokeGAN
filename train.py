@@ -19,7 +19,7 @@ FEATURES_DISC = 64
 FEATURES_GEN = 64
 
 
-def train(dir_path: str):
+def train(dir_path: str, checkpoint_dir: str):
     # Get the dataloader
     loader = get_data_loader(batch_size=BATCH_SIZE, shuffle=True, num_workers=2, dir_path=dir_path)
 
@@ -86,3 +86,7 @@ def train(dir_path: str):
                     writer_fake.add_image('Fake', img_grid_fake, global_step=step)
 
                     step += 1
+
+        # Save a checkpoint
+        torch.save(gen.state_dict(), f"{checkpoint_dir}/gen_{epoch}.pth")
+        torch.save(disc.state_dict(), f"{checkpoint_dir}/disc_{epoch}.pth")
