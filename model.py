@@ -3,7 +3,7 @@ Implemantaion of the DCGAN paper https://arxiv.org/abs/1511.06434 to be used for
 """
 
 import torch.nn as nn
-
+import torch
 
 class Discriminator(nn.Module):
     def __init__(self, channels_img, features_d):
@@ -72,8 +72,11 @@ class Generator(nn.Module):
         return self.net(x)
 
 
-def initialize_weights(model):
+def initialize_weights(model, load_path=None):
     """ Initialize the weights of the model. """
-    for m in model.modules():
-        if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
-            nn.init.normal_(m.weight.data, 0.0, 0.02)
+    if load_path:
+        model.load_state_dict(torch.load(load_path))
+    else:
+        for m in model.modules():
+            if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
+                nn.init.normal_(m.weight.data, 0.0, 0.02)
