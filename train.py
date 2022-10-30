@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from dataset import get_data_loader
 from model import Discriminator, Generator, initialize_weights
-
+from tqdm import tqdm
 # Hyper parameters etc.
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 LEARNING_RATE = 2e-4
@@ -14,7 +14,7 @@ BATCH_SIZE = 128
 IMAGE_SIZE = 64
 CHANNELS_IMG = 3
 Z_DIM = 100
-NUM_EPOCHS = 5
+NUM_EPOCHS = 50
 FEATURES_DISC = 64
 FEATURES_GEN = 64
 
@@ -45,7 +45,7 @@ def train(dir_path: str, checkpoint_dir: str):
     step = 0
     # The training loop!
     for epoch in range(NUM_EPOCHS):
-        for batch_idx, (real, _) in enumerate(loader):
+        for batch_idx, (real, _) in tqdm(enumerate(loader)):
             real = real.to(device)
             noise = torch.randn((BATCH_SIZE, Z_DIM, 1, 1)).to(device)
             fake = gen(noise)
