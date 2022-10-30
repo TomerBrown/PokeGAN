@@ -14,7 +14,7 @@ BATCH_SIZE = 128
 IMAGE_SIZE = 64
 CHANNELS_IMG = 3
 Z_DIM = 100
-NUM_EPOCHS = 50
+NUM_EPOCHS = 500
 FEATURES_DISC = 64
 FEATURES_GEN = 64
 
@@ -88,5 +88,6 @@ def train(dir_path: str, checkpoint_dir: str):
                     step += 1
 
         # Save a checkpoint
-        torch.save(gen.state_dict(), f"{checkpoint_dir}/gen_{epoch}.pth")
-        torch.save(disc.state_dict(), f"{checkpoint_dir}/disc_{epoch}.pth")
+        if epoch % 10 == 0:
+            torch.save(gen.state_dict(), f"{checkpoint_dir}/gen_{epoch}.pth")
+            torch.save(disc.state_dict(), f"{checkpoint_dir}/disc_{epoch}.pth")
